@@ -1,0 +1,154 @@
+---
+title: "Tidyverse_asignment"
+author: "Rhaodesn"
+date: "1/10/2019"
+output: html_document
+---
+
+```{r}
+install.packages("tidyverse")
+
+library(tidyverse)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+10.1.How can you tell if an object is a tibble? (Hint: try printing mtcars, which is a regular data frame).
+```{r}
+print (mtcars)
+
+```
+
+
+***Answer 1: Data frame print the entire thing. Where as Tibbles only print a small subset. This can be very benificial for large data sets.
+
+10.2.Compare and contrast the following operations on a data.frame and equivalent tibble. What is different? Why might the default data frame behaviours cause you frustration?
+```{r}
+df <- data.frame(abc = 1, xyz = "a")
+df$x
+df[, "xyz"]
+df[, c("abc", "xyz")]
+
+tbg <- tibble(abc = 1, xyz = "a")
+tbg$x
+tbg[, "xyz"]
+tbg[, c("abc", "xyz")]
+
+```
+***Answer 2: In the df when you ask for the value corresponding to x you recive a despite this not being a complete column name. This is resolve in a tibble. Ony responding to complete names impoves accuracy.
+
+If you have the name of a variable stored in an object, e.g. var <- "mpg", how can you extract the reference variable from a tibble?
+
+
+10.3. If you have the name of a variable stored in an object, e.g. var <- "mpg", how can you extract the reference variable from a tibble?
+***Answer
+```{r}
+tbg [["mpg"]]
+```
+
+10.4.Practice referring to non-syntactic names in the following data frame by:
+
+  Extracting the variable called 1.
+
+```{r}
+annoying <- tibble(
+  `1` = 1:10,
+  `2` = `1` * 2 + rnorm(length(`1`))
+)
+
+annoying$`1`
+
+
+
+```
+  Plotting a scatterplot of 1 vs 2.
+```{r}
+plot(annoying[[1]], annoying[[2]])
+```
+Creating a new column called 3 which is 2 divided by 1.
+```{r}
+annoying[[3]] = (annoying[[1]]/annoying[[2]])
+annoying
+```
+ Renaming the columns to one, two and three.
+```{r}
+rename(annoying, one = `1`, two = `2`, three = `V3`)
+
+```
+10.5 What does tibble::enframe() do? When might you use it?
+***Answer: converts named vectors to a data frame with names and values
+
+10.6 What option controls how many additional column names are printed at the footer of a tibble?
+***Answer: sorry I really go not understand what this question is asking.
+
+Question 11.1 What function would you use to read a file where fields were separated with “|”?
+```{r}
+read_delim(FILENAME, delim = "|")
+```
+
+11.2 Apart from file, skip, and comment, what other arguments do read_csv() and read_tsv() have in common?
+***Answer: col_names, col_types, locale, na, lacale_na, quote, trim_ws, n_max, guess_max, progress, skip_empty_rows.
+
+
+11.4 Sometimes strings in a CSV file contain commas. To prevent them from causing problems they need to be surrounded by a quoting character, like " or '. By convention, read_csv() assumes that the quoting character will be ", and if you want to change it you’ll need to use read_delim() instead. What arguments do you need to specify to read the following text into a data frame? "x,y\n1,'a,b'"
+
+```{r}
+tbg <- "x,y\n1,'a,b'"
+read_delim(tbg,delim= ",", quote = "'")
+
+```
+
+
+Question 12.32.3 Recreate the plot showing change in cases over time using table2 instead of table1. What do you need to do first?
+***Filter to only include cases, because cases and population are in the same column
+```{r}
+table2 %>%
+  filter(type == "cases") %>%
+  ggplot(aes(year, count)) +
+  geom_line(aes(group = country), colour = "grey50") + 
+  geom_point(aes(colour = country))
+
+```
+
+
+Chapter 13
+```{r}
+library("tidyverse")
+library("nycflights13")
+library("datamodelr")
+```
+
+13.3.1:Add a surrogate key to flights
+```{r}
+flights
+flights %>%
+mutate(flight_surrogte = row_number()) %>%
+  glimpse()
+```
+
+13.4.2 Add the location of the origin and destination (i.e. the lat and lon) to flights.
+
+```{r}
+airports$lat
+aitports$lon
+
+airport_loc <- airports %>%
+  select(faa, lat, lon)
+
+flights %>%
+  select(origin, dest) %>%
+  left_join(
+    airport_loc,
+    by = c("origin" = "faa")
+  ) %>%
+  left_join(
+    airport_loc,
+    by = c("dest" = "faa")
+  )
+```
+
